@@ -171,7 +171,7 @@ Three numbers at the top of the stylesheet drive the violet used across the page
 | Social descriptions say "8+ years" | `og:description` and `twitter:description` still said "Eight years" after the hero changed, so link previews understated the page. |
 | Closed drawer removed from the tab order | The brand drawer sits off-screen at `translateX(103%)` when closed. `aria-hidden` hides it from screen readers but does **not** remove it from the tab order, so a keyboard user could tab into invisible controls. Now `visibility:hidden` when closed, restored on open with a zero-duration transition so the slide animation is unaffected. |
 | Drawer given an accessible name | It had `role="dialog"` with nothing to announce. Now `aria-label="Engagement record"`. |
-| Footer link tap targets | Nine footer links were 16px tall, under the 24px minimum in WCAG 2.2 SC 2.5.8. Now `min-height:24px` with the row gap reduced so spacing is unchanged. |
+| Tap targets, header and footer nav | Nine footer links and ten header nav links were 16px tall, under the 24px minimum in WCAG 2.2 SC 2.5.8. Both now `min-height:24px`; the footer row gap was reduced so spacing is unchanged, and the header links were already centred in a 65px bar so nothing moved visually. Worth noting for future audits: the header set was missed on the first pass because the audit ran only at 390px, where the desktop nav is hidden. Tap targets are now checked at 13 widths from 320 to 1920px. |
 
 **Verified after the changes:** 0 of 555 text elements below WCAG AA (lowest ratio now 5.15:1),
 no horizontal scroll at 320 / 360 / 375 / 390 / 414 / 480 / 540 / 640 / 700 / 768 / 834 / 900 /
