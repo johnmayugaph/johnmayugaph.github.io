@@ -164,6 +164,10 @@ Three numbers at the top of the stylesheet drive the violet used across the page
 | `aria-hidden="true"` on 79 decorative SVGs | Screen readers were announcing every icon as an unlabelled graphic. |
 | JSON-LD `Person` schema | Gives Google structured facts — name, role, location, skills, GitHub — instead of guessing from prose. |
 
+| `text-wrap: balance` on headings | Long headings stranded a word or two on their own last line — "Nine things I actually work / on." On phones this hit 7–9 headings per width. Balancing evens the lines out; body copy gets `text-wrap: pretty` for the same reason. Orphan count at 360–414px went from 7–9 to zero. |
+
+| Hero H1 sized to two lines | "Shopify storefronts engineered for conversion," was wrapping to two lines on its own, making a three-line headline. The H1 now breaks out of the 1152px body column (`width:min(1560px,96vw)`, centred with a transform) and is sized `clamp(34px,4.1vw,68px)` so that first clause holds one line from 834px up. Below that it wraps naturally. Verified two lines at 834–2560px, no overflow at any of 20 widths. |
+
 **Verified after the changes:** 0 of 555 text elements below WCAG AA (lowest ratio now 5.15:1),
 no horizontal scroll at 320 / 360 / 375 / 390 / 414 / 480 / 540 / 640 / 700 / 768 / 834 / 900 /
 1024 / 1180 / 1280 / 1440 / 1600 / 1920 px, 44 brand cards and all interactions intact,
