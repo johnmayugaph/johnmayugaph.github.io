@@ -14,10 +14,28 @@
 <meta property="og:site_name" content="John Paul Mayuga">
 <meta property="og:title" content="John Paul Mayuga — Shopify &amp; E-commerce Portfolio">
 <meta property="og:description" content="Eight years across Shopify, Amazon and TikTok Shop. 44 brands, each documented with the work I did on it.">
+<meta property="og:image" content="https://johnmayugaph.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="John Paul Mayuga — Shopify storefronts engineered for conversion, measured against revenue.">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://johnmayugaph.github.io/og.png">
 <meta name="twitter:title" content="John Paul Mayuga — Shopify &amp; E-commerce Portfolio">
 <meta name="twitter:description" content="Eight years across Shopify, Amazon and TikTok Shop. 44 brands on the record.">
 <title>John Paul Mayuga — Shopify &amp; E-commerce Portfolio</title>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person",
+"name":"John Paul Mayuga",
+"url":"https://johnmayugaph.github.io/",
+"image":"https://johnmayugaph.github.io/og.png",
+"email":"mailto:johnmayuga.ph@gmail.com",
+"jobTitle":"Shopify Engineer & E-commerce Specialist",
+"address":{"@type":"PostalAddress","addressRegion":"Pampanga","addressCountry":"PH"},
+"knowsAbout":["Shopify","Liquid","Shopify theme development","Subscriptions","Recharge","Amazon Seller Central","TikTok Shop","Conversion rate optimisation","Google Analytics 4","Klaviyo"],
+"alumniOf":{"@type":"CollegeOrUniversity","name":"AMA Computer College"},
+"sameAs":["https://github.com/johnmayugaph"]}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -28,7 +46,7 @@
   --c-400:#22D3EE; --c-500:#06B6D4; --c-300:#67E8F9;
   --em:#34D399; --red:#F87171; --amber:#FBBF24;
   --amz:#FF9900; --tt1:#00F2EA; --tt2:#FF0050; --shop:#95BF47; --shop-2:#B4D77A;
-  --s-200:#E2E8F0; --s-300:#CBD5E1; --s-400:#94A3B8; --s-500:#64748B; --s-600:#475569;
+  --s-200:#E2E8F0; --s-300:#CBD5E1; --s-400:#94A3B8; --s-500:#7A8A9F; --s-600:#475569;
   --line:rgba(255,255,255,.10); --line-soft:rgba(255,255,255,.05);
   --card:rgba(255,255,255,.03);
   --f:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -40,6 +58,8 @@ body::selection,::selection{background:rgba(124,58,237,.4)}
 a{color:inherit;text-decoration:none}
 button{font:inherit;border:none;background:none;color:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--v-400);outline-offset:3px;border-radius:6px}
+.skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--v);color:#fff;padding:12px 20px;border-radius:0 0 12px 0;font-weight:800;font-size:14px}
+.skip:focus{left:0}
 .wrap{max-width:1152px;margin:0 auto;padding:0 16px}
 .narrow{max-width:896px}
 .tight{max-width:768px}
@@ -358,9 +378,10 @@ footer.ft{border-top:1px solid var(--line-soft);background:var(--foot);padding:4
 .ft h4{margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--s-500)}
 .ft ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:flex-end;max-width:460px;font-size:13.5px;color:var(--s-400)}
 .ft ul a:hover{color:#fff}
-.ft .copy{margin-top:28px;border-top:1px solid var(--line-soft);padding-top:18px;text-align:center;font-size:12px;color:var(--s-600)}
+.ft .copy{margin-top:28px;border-top:1px solid var(--line-soft);padding-top:18px;text-align:center;font-size:12px;color:var(--s-500)}
 @media(max-width:767px){.ft ul{justify-content:flex-start;max-width:none}.ft h4{margin-bottom:8px}}
-.sticky{position:fixed;inset-inline:0;bottom:0;z-index:50}
+.sticky{position:fixed;inset-inline:0;bottom:0;z-index:50;opacity:0;transform:translateY(130%);pointer-events:none;transition:opacity .3s ease,transform .3s ease}
+.sticky.show{opacity:1;transform:none;pointer-events:auto}
 .sticky .in{margin:0 16px 16px;display:flex;max-width:512px;align-items:center;justify-content:space-between;gap:16px;border-radius:16px;border:1px solid rgba(139,92,246,.4);background:rgba(13,13,24,.95);padding:12px 16px;box-shadow:0 0 40px rgba(139,92,246,.35);backdrop-filter:blur(12px)}
 @media(min-width:640px){.sticky .in{margin-inline:auto}}
 .sticky .txt{display:none}
@@ -414,6 +435,7 @@ footer.ft{border-top:1px solid var(--line-soft);background:var(--foot);padding:4
 </style>
 </head>
 <body>
+<a class="skip" href="#top">Skip to content</a>
 
 <header class="hd">
   <div class="hd-in">
@@ -1628,7 +1650,7 @@ function mk(b){
   var d=domOf(b),f=initials(b.n);
   if(!d) return '<span class="mk"><b>'+esc(f)+'</b></span>';
   return '<span class="mk"><img src="https://www.google.com/s2/favicons?domain='+encodeURIComponent(d)
-    +'&sz=64" alt="" loading="lazy" onerror="var p=this.parentNode;this.style.display=\'none\';if(p){var q=p.querySelector(\'b\');if(q)q.style.display=\'block\'}">'
+    +'&sz=64" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var p=this.parentNode;this.style.display=\'none\';if(p){var q=p.querySelector(\'b\');if(q)q.style.display=\'block\'}">'
     +'<b style="display:none">'+esc(f)+'</b></span>';
 }
 
@@ -1701,7 +1723,7 @@ $("#flow").innerHTML=FLOW.map(function(f,i){
 $("#cxGrid").innerHTML=CONNECTIONS.map(function(c){
   var fb=c[0].replace(/[^A-Za-z]/g,"").slice(0,2).toUpperCase();
   return '<div class="cx">'
-    + '<span class="mk"><img src="https://www.google.com/s2/favicons?domain='+encodeURIComponent(c[1])+'&sz=64" alt="" loading="lazy" '
+    + '<span class="mk"><img src="https://www.google.com/s2/favicons?domain='+encodeURIComponent(c[1])+'&sz=64" alt="" loading="lazy" referrerpolicy="no-referrer" '
     + 'onerror="var p=this.parentNode;this.style.display=\'none\';if(p){var q=p.querySelector(\'b\');if(q)q.style.display=\'block\'}">'
     + '<b style="display:none">'+esc(fb)+'</b></span>'
     + '<span>'+esc(c[0])+'</span></div>';
@@ -1901,6 +1923,27 @@ document.addEventListener("click",function(e){
 });
 
 draw();
+
+/* Sticky contact bar: show once the hero is out of view, hide again over the
+   contact section so it never sits on top of the CTA it duplicates. */
+(function(){
+  var bar=document.querySelector(".sticky"); if(!bar) return;
+  var hero=document.querySelector(".hero"), hire=document.getElementById("hire");
+  var heroOut=false, atContact=false;
+  var sync=function(){ bar.classList.toggle("show", heroOut && !atContact); };
+  if("IntersectionObserver" in window){
+    new IntersectionObserver(function(e){ heroOut=!e[0].isIntersecting; sync(); },
+      {rootMargin:"-40% 0px 0px 0px"}).observe(hero);
+    if(hire) new IntersectionObserver(function(e){ atContact=e[0].isIntersecting; sync(); },
+      {threshold:0.18}).observe(hire);
+  } else { bar.classList.add("show"); }
+})();
+
+/* Every SVG here is decorative - each one sits next to its own text label -
+   so keep screen readers from announcing them as unlabelled graphics. */
+document.querySelectorAll("svg:not([aria-hidden])").forEach(function(g){
+  if(!g.querySelector("title")) g.setAttribute("aria-hidden","true");
+});
 })();
 </script>
 </body>

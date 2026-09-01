@@ -139,7 +139,9 @@ Three numbers at the top of the stylesheet drive the violet used across the page
 
 ---
 
-## QA fixes applied (1 Sep 2026)
+## QA fixes applied
+
+### Round 1 — pre-deploy (1 Sep 2026)
 
 | Fix | What it was |
 |---|---|
@@ -147,22 +149,34 @@ Three numbers at the top of the stylesheet drive the violet used across the page
 | Desktop nav breakpoint 768px → 1024px | The seven-item nav switched on at 768px but needs ~990px, so the header ran off the screen on iPad portrait. |
 | `.cta-row .btn` max-width + small-screen sizing | The `johnmayuga.ph@gmail.com` button was 418px wide and broke layout on any phone under 400px. |
 | Removed duplicate `<meta name="description">` | Two competing descriptions; search engines pick one at random. |
-| CV download shim | Native `<a download>` still used here on GitHub Pages; the shim only activates inside the claude.ai artifact viewer, which blocks page-initiated downloads. |
+| CV download shim | Native `<a download>` is used here; the shim only activates inside the claude.ai artifact viewer, which blocks page-initiated downloads. |
 
-Verified clean at 320 / 360 / 375 / 390 / 414 / 480 / 540 / 640 / 700 / 768 / 834 / 900 /
-1024 / 1180 / 1280 / 1440 / 1600 / 1920 px. No JavaScript errors.
+### Round 2 — audited against the live site (1 Sep 2026)
 
-### Still open (not fixed — your call)
+| Fix | What it was |
+|---|---|
+| `--s-500` `#64748B` → `#7A8A9F` | **70 text elements failed WCAG AA.** 69 of them used this one token: 3.83:1 against the card background, needs 4.5:1. Now 5.18:1. |
+| Footer copyright `--s-600` → `--s-500` | The remaining failure — 2.41:1, the worst on the page. |
+| `og:image` + `twitter:image` + `og.png` | `twitter:card` claimed `summary_large_image` with no image, so every LinkedIn/Slack/X share rendered as a bare text card. `og.png` is a 1200×630 card built in the site's own type and palette. |
+| `referrerpolicy="no-referrer"` on 143 logo images | Brand logos come from Google's favicon service — 77 requests that were handing Google the referring URL of every visitor. The logos still load; the referrer no longer leaks. |
+| Sticky bar now reveals on scroll | It was permanently on, sitting on top of the hero's "See the work" button on phones. Now it appears once the hero scrolls away and hides again over the contact section, so it never covers the CTA it duplicates. |
+| Skip-to-content link | Keyboard and screen-reader users had to tab through the whole nav on every visit. |
+| `aria-hidden="true"` on 79 decorative SVGs | Screen readers were announcing every icon as an unlabelled graphic. |
+| JSON-LD `Person` schema | Gives Google structured facts — name, role, location, skills, GitHub — instead of guessing from prose. |
 
-- **No `og:image`.** `twitter:card` is set to `summary_large_image` but there's no image
-  to show, so LinkedIn/Slack/X previews render as a bare text card. Add a 1200×630 PNG
-  as `og.png`, then add `<meta property="og:image" content="https://johnmayugaph.github.io/og.png">`
-  and the matching `twitter:image`.
-- **Brand logos need the open internet.** They come from Google's favicon service. Where
-  that's blocked (corporate networks, the claude.ai artifact viewer) every brand falls back
-  to its initials. The fallback is clean — this is a note, not a defect.
-- **The sticky bottom bar is always on.** On a phone it covers the hero's "See the work"
-  button. Consider revealing it only after the hero scrolls past.
-- **No skip-to-content link**, and 79 decorative SVGs lack `aria-hidden="true"`. Minor
-  accessibility polish; everything else (landmarks, heading order, focus rings,
-  `aria-expanded`, `role="dialog"`, reduced-motion) already checks out.
+**Verified after the changes:** 0 of 555 text elements below WCAG AA (lowest ratio now 5.15:1),
+no horizontal scroll at 320 / 360 / 375 / 390 / 414 / 480 / 540 / 640 / 700 / 768 / 834 / 900 /
+1024 / 1180 / 1280 / 1440 / 1600 / 1920 px, 44 brand cards and all interactions intact,
+no JavaScript errors.
+
+**Live performance** (measured on GitHub Pages): 396 KB decoded / 218 KB over the wire,
+TTFB 290 ms, DOMContentLoaded 543 ms, fully loaded 794 ms.
+
+### Still open (deliberately not changed)
+
+- **143 logo requests still go to Google.** `no-referrer` stops the leak, but the third-party
+  dependency remains: on a network that blocks Google, or if the service changes, every brand
+  falls back to its initials. Embedding the logos as data URIs would remove the dependency
+  entirely at a cost of roughly 100–150 KB.
+- **19 tap targets are under 24px.** Small icon buttons. Below the 24×24 WCAG 2.2 minimum,
+  though all of them sit next to a larger labelled control.
