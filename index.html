@@ -1935,24 +1935,32 @@ draw();
 
 /* Sticky contact bar: show once the hero is out of view, hide again over the
    contact section so it never sits on top of the CTA it duplicates.
-   Driven by scroll position rather than IntersectionObserver: IO batches
-   entries during fast scrolling, and reading entries[0] can act on a stale
-   observation, which left the bar stuck visible after a long jump. */
+
+   Deliberately a plain passive scroll listener. Two earlier attempts failed:
+   IntersectionObserver batches entries during fast scrolling and reading
+   entries[0] acted on a stale observation; a requestAnimationFrame latch then
+   left the bar permanently dead, because a hidden or throttled tab drops the
+   queued frame and the "already scheduled" flag never clears. This reads one
+   rect per scroll event, has no state that can wedge, and re-syncs whenever
+   the tab becomes visible again. */
 (function(){
   var bar=document.querySelector(".sticky"); if(!bar) return;
   var hero=document.querySelector(".hero"), hire=document.getElementById("hire");
-  var ticking=false;
   function update(){
-    ticking=false;
-    var heroOut = window.scrollY > (hero ? hero.offsetHeight*0.6 : 400);
+    var y = window.scrollY || window.pageYOffset || 0;
+    var heroOut = y > (hero ? hero.offsetHeight * 0.6 : 400);
     var atContact = false;
-    if(hire){ var r=hire.getBoundingClientRect();
-      atContact = r.top < window.innerHeight*0.85 && r.bottom > 0; }
+    if(hire){
+      var r = hire.getBoundingClientRect();
+      atContact = r.top < window.innerHeight * 0.85 && r.bottom > 0;
+    }
     bar.classList.toggle("show", heroOut && !atContact);
   }
-  function onScroll(){ if(!ticking){ ticking=true; requestAnimationFrame(update); } }
-  window.addEventListener("scroll", onScroll, {passive:true});
-  window.addEventListener("resize", onScroll, {passive:true});
+  window.addEventListener("scroll", update, {passive:true});
+  window.addEventListener("resize", update, {passive:true});
+  window.addEventListener("load", update);
+  window.addEventListener("pageshow", update);
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden) update(); });
   update();
 })();
 
