@@ -133,8 +133,14 @@ Three numbers at the top of the stylesheet drive the violet used across the page
   initials. The page needs an internet connection for logos to render.
 - The contact form and buttons are `mailto:` links. There is no server, so
   nothing is stored or sent in the background.
-- The file is around 395 KB, mostly the embedded screenshots and CV. That is fine
-  for GitHub Pages, which has a 1 GB repo limit and a 100 MB per-file limit.
+- `index.html` is around 450 KB, mostly the embedded screenshots and the CV PDF.
+  It gzips to roughly 264 KB over the wire. That is fine for GitHub Pages, which
+  has a 1 GB repo limit and a 100 MB per-file limit.
+- The CV is embedded as a base64 `data:` URI, so it ships with the page and needs
+  no separate request. To replace it: run the new PDF through
+  `qpdf --object-streams=generate --recompress-flate --compression-level=9 --linearize`
+  first (it took the current one from 136 KB to 99 KB with no visible change), then
+  swap the base64 payload in the `$("#cvBtn").href` assignment.
 
 
 ---
