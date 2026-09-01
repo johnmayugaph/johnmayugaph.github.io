@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://johnmayugaph.github.io/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="John Paul Mayuga — Shopify storefronts engineered for conversion, measured against revenue.">
+<meta property="og:image:alt" content="John Paul Mayuga — Shopify storefronts engineered for conversion, built for growth.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://johnmayugaph.github.io/og.png">
 <meta name="twitter:title" content="John Paul Mayuga — Shopify &amp; E-commerce Portfolio">
@@ -469,8 +469,8 @@ footer.ft{border-top:1px solid var(--line-soft);background:var(--foot);padding:4
       Open to work — full-time or contract, remote
     </div>
     <p class="kicker">John Paul Mayuga</p>
-    <h1>Shopify storefronts engineered for conversion,<br><span class="grad">measured against revenue.</span></h1>
-    <p class="lede">Eight years of Shopify theme development, subscription platforms, marketplace operations and the reporting that sits underneath them. <b>Forty-four brands</b> — each one documented on this page, with the work I did on it.</p>
+    <h1>Shopify storefronts engineered for conversion,<br><span class="grad">built for growth.</span></h1>
+    <p class="lede">8+ years of Shopify theme development, subscription platforms, marketplace operations and the reporting that sits underneath them. <b>44 brands</b> — each one documented on this page, with the work I did on it.</p>
     <div class="cta-col">
       <div class="cta-row">
         <a class="btn btn-xl" href="#hire">
@@ -1925,18 +1925,26 @@ document.addEventListener("click",function(e){
 draw();
 
 /* Sticky contact bar: show once the hero is out of view, hide again over the
-   contact section so it never sits on top of the CTA it duplicates. */
+   contact section so it never sits on top of the CTA it duplicates.
+   Driven by scroll position rather than IntersectionObserver: IO batches
+   entries during fast scrolling, and reading entries[0] can act on a stale
+   observation, which left the bar stuck visible after a long jump. */
 (function(){
   var bar=document.querySelector(".sticky"); if(!bar) return;
   var hero=document.querySelector(".hero"), hire=document.getElementById("hire");
-  var heroOut=false, atContact=false;
-  var sync=function(){ bar.classList.toggle("show", heroOut && !atContact); };
-  if("IntersectionObserver" in window){
-    new IntersectionObserver(function(e){ heroOut=!e[0].isIntersecting; sync(); },
-      {rootMargin:"-40% 0px 0px 0px"}).observe(hero);
-    if(hire) new IntersectionObserver(function(e){ atContact=e[0].isIntersecting; sync(); },
-      {threshold:0.18}).observe(hire);
-  } else { bar.classList.add("show"); }
+  var ticking=false;
+  function update(){
+    ticking=false;
+    var heroOut = window.scrollY > (hero ? hero.offsetHeight*0.6 : 400);
+    var atContact = false;
+    if(hire){ var r=hire.getBoundingClientRect();
+      atContact = r.top < window.innerHeight*0.85 && r.bottom > 0; }
+    bar.classList.toggle("show", heroOut && !atContact);
+  }
+  function onScroll(){ if(!ticking){ ticking=true; requestAnimationFrame(update); } }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  window.addEventListener("resize", onScroll, {passive:true});
+  update();
 })();
 
 /* Every SVG here is decorative - each one sits next to its own text label -
