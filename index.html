@@ -77,6 +77,39 @@ header.hd{position:fixed;inset-inline:0;top:0;z-index:50;border-bottom:1px solid
 .logo .txt{font-size:18px;font-weight:900;letter-spacing:-.01em}
 .logo .txt i{font-style:normal;color:var(--c-400)}
 nav.main{display:none;gap:24px}
+
+/* mobile nav — burger + right-hand flyout, matching the brand drawer's motion.
+   Closed state uses visibility:hidden so the panel is out of the tab order,
+   not just visually off-screen. */
+.burger{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  width:44px;height:44px;margin-right:-6px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.03);flex:none}
+.burger:hover{background:rgba(255,255,255,.08)}
+.burger i{display:block;width:18px;height:2px;border-radius:2px;background:#fff;
+  transition:transform .28s ease,opacity .18s ease}
+.burger[aria-expanded="true"] i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.burger[aria-expanded="true"] i:nth-child(2){opacity:0}
+.burger[aria-expanded="true"] i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.scrim.for-nav{z-index:100}
+.mnav{position:fixed;top:0;right:0;height:100dvh;width:min(320px,84%);z-index:110;
+  background:var(--bg-2);border-left:1px solid var(--line);display:flex;flex-direction:column;
+  padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));overflow-y:auto;
+  transform:translateX(103%);visibility:hidden;
+  transition:transform .32s cubic-bezier(.32,.72,0,1),visibility 0s linear .32s}
+.mnav.on{transform:translateX(0);visibility:visible;
+  transition:transform .32s cubic-bezier(.32,.72,0,1),visibility 0s}
+.mnav-hd{display:flex;align-items:center;justify-content:space-between;padding:2px 6px 12px;
+  border-bottom:1px solid var(--line-soft);margin-bottom:8px}
+.mnav-hd b{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--s-500)}
+.mnav-links{display:flex;flex-direction:column}
+.mnav-links a{display:flex;align-items:center;min-height:48px;padding:0 10px;border-radius:10px;
+  font-size:16px;font-weight:600;color:var(--s-200);transition:background .18s,color .18s}
+.mnav-links a:hover,.mnav-links a:focus-visible{background:rgba(255,255,255,.06);color:#fff}
+.mnav .btn{margin-top:14px;width:100%}
+.mnav .mn-foot{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);
+  font-size:12.5px;color:var(--s-500);line-height:1.7}
+.mnav .mn-foot a{color:var(--s-400);display:inline-flex;align-items:center;min-height:24px}
+.mnav .mn-foot a:hover{color:#fff}
 nav.main a{font-size:14px;font-weight:500;color:var(--s-300);transition:color .2s;display:inline-flex;align-items:center;min-height:24px}
 nav.main a:hover{color:#fff}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:800;transition:transform .15s,background .2s}
@@ -440,7 +473,11 @@ footer.ft{border-top:1px solid var(--line-soft);background:var(--foot);padding:4
 .dmeta dd{margin:0;text-align:right;max-width:62%}
 .visit{display:inline-block;margin-top:16px;font-size:14px;font-weight:700;color:var(--c-400)}
 
-@media(min-width:1024px){nav.main{display:flex}}
+/* Below 400px the logo, Contact button and burger cannot share the bar without
+   clipping. The burger wins: the flyout carries "Get in touch", and the sticky
+   bar carries "Email me", so no call to action is lost. */
+@media(max-width:399px){.hd-in>.btn-v{display:none}}
+@media(min-width:1024px){nav.main{display:flex}.burger{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}html{scroll-behavior:auto}}
 </style>
 </head>
@@ -466,8 +503,31 @@ footer.ft{border-top:1px solid var(--line-soft);background:var(--foot);padding:4
       <a href="#faq">FAQ</a>
     </nav>
     <a class="btn btn-v" href="#hire">Contact</a>
+    <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mnav"><i></i><i></i><i></i></button>
   </div>
 </header>
+
+<div class="scrim for-nav" id="mnavScrim"></div>
+<nav class="mnav" id="mnav" aria-label="Site menu" aria-hidden="true">
+  <div class="mnav-hd">
+    <b>Menu</b>
+    <button class="xb" id="mnavClose" type="button" aria-label="Close menu">&times;</button>
+  </div>
+  <div class="mnav-links">
+    <a href="#brands">Brands</a>
+    <a href="#capabilities">What I do</a>
+    <a href="#shopify">Shopify</a>
+    <a href="#amazon">Amazon</a>
+    <a href="#tiktok">TikTok</a>
+    <a href="#inside">The record</a>
+    <a href="#connections">Stack</a>
+    <a href="#journey">Resume</a>
+    <a href="#feedback">Feedback</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <a class="btn btn-md" href="#hire">Get in touch</a>
+  <p class="mn-foot"><a href="mailto:johnmayuga.ph@gmail.com">johnmayuga.ph@gmail.com</a><br>Open to work &middot; remote, GMT+8</p>
+</nav>
 
 <main id="top">
 
@@ -1248,23 +1308,23 @@ var AGENCY = {
  "CTRL":{tier:"Full service + traditional affiliate",status:"Active",start:"Jan 2026",role:"E-commerce lead",tags:FULL},
  "Vai Dai Coffee":{tier:"Custom",status:"Active",start:"Jun 2026",role:"E-commerce lead",tags:["paid","pc","amz","inf","aff","ecom","life"]},
  "Completely Bare":{tier:"Foundational",status:"Active",start:"Mar 2026",role:"PDP, bundles and reviews",tags:["paid","pc","inf","life","amz","tts"]},
- "Fatboy Hair":{tier:"Foundational + traditional affiliate",status:"Ended Aug 2026",start:"Sep 2025",role:"E-commerce lead",tags:["paid","pc","inf","aff","life","amz","ecom","tts"]},
- "PRIMA":{tier:"Full service + traditional affiliate",status:"Paused",start:"Mar 2025",role:"E-commerce lead",tags:FULL},
+ "Fatboy Hair":{tier:"Foundational + traditional affiliate",status:"Active",start:"Sep 2025",role:"E-commerce lead",tags:["paid","pc","inf","aff","life","amz","ecom","tts"]},
+ "PRIMA":{tier:"Full service + traditional affiliate",status:"Active",start:"Mar 2025",role:"E-commerce lead",tags:FULL},
  "Sunday Citizen":{tier:"TikTok environment",status:"Active",start:"Jul 2026",role:"E-commerce lead",tags:["tts","paid","pc","inf","aff","ecom"]},
- "Starwalker Organic Farms":{tier:"Foundational + traditional affiliate",status:"Churned",start:"Aug 2025",role:"E-commerce lead",tags:["paid","pc","inf","aff","life","amz","ecom","tts"]},
- "PlayerMaker":{tier:"Adssential + landing pages, lifecycle add-on",status:"Churned",start:"Sep 2025",role:"E-commerce lead",tags:["paid","pc","inf","aff","lp","life","ecom","tts"]},
- "Hunnee":{tier:"Foundational + traditional affiliate",status:"Churned",start:"Sep 2025",role:"E-commerce lead",tags:["paid","pc","inf","aff","life","amz","ecom","tts"]},
- "Joymode":{tier:"Amazon only",status:"Churned",start:"Oct 2025",role:"E-commerce lead",tags:["amz","ecom"]},
- "Laird Superfood":{tier:"Full service + traditional affiliate",status:"Churned",start:"Jan 2026",role:"E-commerce lead",tags:FULL},
- "Noble Origins":{tier:"Custom",status:"Churned",start:"Jan 2026",role:"E-commerce lead",tags:["paid","pc","inf","aff","ecom","life"]},
- "Back To Earth":{tier:"Full service",status:"Churned",start:"Jan 2026",role:"E-commerce lead",tags:FULL},
- "Pain Be Gone":{tier:"Full service",status:"Churned",start:"Jan 2026",role:"E-commerce lead",tags:FULL},
- "The Forward Bar":{tier:"Custom",status:"Ended Jun 2026",start:"Jan 2026",role:"E-commerce lead",tags:["paid","pc","lp","life","aff","ecom"]},
- "Vitapod":{tier:"Foundational",status:"Churned",start:"May 2025",role:"E-commerce lead",tags:["paid","pc","inf","life","amz","ecom"]},
- "Eat Lasso":{tier:"Custom",status:"Paused",start:"Feb 2026",role:"Bundles and offers",tags:["paid","pc","inf","aff","tts","amz","life"]},
- "Inked by Dani":{tier:"Adssential",status:"Churned",start:"Jan 2026",role:"E-commerce audit",tags:["paid","pc","inf","tts"]},
+ "Starwalker Organic Farms":{tier:"Foundational + traditional affiliate",status:"Active",start:"Aug 2025",role:"E-commerce lead",tags:["paid","pc","inf","aff","life","amz","ecom","tts"]},
+ "PlayerMaker":{tier:"Adssential + landing pages, lifecycle add-on",status:"Active",start:"Sep 2025",role:"E-commerce lead",tags:["paid","pc","inf","aff","lp","life","ecom","tts"]},
+ "Hunnee":{tier:"Foundational + traditional affiliate",status:"Active",start:"Sep 2025",role:"E-commerce lead",tags:["paid","pc","inf","aff","life","amz","ecom","tts"]},
+ "Joymode":{tier:"Amazon only",status:"Active",start:"Oct 2025",role:"E-commerce lead",tags:["amz","ecom"]},
+ "Laird Superfood":{tier:"Full service + traditional affiliate",status:"Active",start:"Jan 2026",role:"E-commerce lead",tags:FULL},
+ "Noble Origins":{tier:"Custom",status:"Active",start:"Jan 2026",role:"E-commerce lead",tags:["paid","pc","inf","aff","ecom","life"]},
+ "Back To Earth":{tier:"Full service",status:"Active",start:"Jan 2026",role:"E-commerce lead",tags:FULL},
+ "Pain Be Gone":{tier:"Full service",status:"Active",start:"Jan 2026",role:"E-commerce lead",tags:FULL},
+ "The Forward Bar":{tier:"Custom",status:"Active",start:"Jan 2026",role:"E-commerce lead",tags:["paid","pc","lp","life","aff","ecom"]},
+ "Vitapod":{tier:"Foundational",status:"Active",start:"May 2025",role:"E-commerce lead",tags:["paid","pc","inf","life","amz","ecom"]},
+ "Eat Lasso":{tier:"Custom",status:"Active",start:"Feb 2026",role:"Bundles and offers",tags:["paid","pc","inf","aff","tts","amz","life"]},
+ "Inked by Dani":{tier:"Adssential",status:"Active",start:"Jan 2026",role:"E-commerce audit",tags:["paid","pc","inf","tts"]},
  "Sunkissed By Heaven":{tier:"Adssential",status:"Active",start:"Mar 2026",role:"Theme sections",tags:["paid","pc","inf","aff","tts"]},
- "Cheeky Bonsai":{tier:"Media buy and creator affiliate",status:"Churned",start:"Aug 2025",role:"Portfolio support",tags:["paid","inf"]},
+ "Cheeky Bonsai":{tier:"Media buy and creator affiliate",status:"Active",start:"Aug 2025",role:"Portfolio support",tags:["paid","inf"]},
  "Remote Pharmacy":{tier:"Custom",status:"Active",start:"Jul 2025",role:"Portfolio support",tags:["paid","pc","life","inf","ecom","lp","seo","aff","supply"]}
 };
 
@@ -1963,6 +2023,42 @@ draw();
   window.addEventListener("pageshow", update);
   document.addEventListener("visibilitychange", function(){ if(!document.hidden) update(); });
   update();
+})();
+
+/* Mobile nav. Closed state is visibility:hidden, so the panel is genuinely out of
+   the tab order rather than just parked off-screen. Focus moves into the panel on
+   open and returns to the burger on close. */
+(function(){
+  var burger=$("#burger"), panel=$("#mnav"), scrim=$("#mnavScrim"), closeBtn=$("#mnavClose");
+  if(!burger||!panel||!scrim) return;
+  var lastFocus=null;
+  function isOpen(){ return panel.classList.contains("on"); }
+  function open(){
+    lastFocus=document.activeElement;
+    panel.classList.add("on"); scrim.classList.add("on");
+    burger.setAttribute("aria-expanded","true"); burger.setAttribute("aria-label","Close menu");
+    panel.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+    if(closeBtn) closeBtn.focus();
+  }
+  function close(returnFocus){
+    if(!isOpen()) return;
+    panel.classList.remove("on"); scrim.classList.remove("on");
+    burger.setAttribute("aria-expanded","false"); burger.setAttribute("aria-label","Open menu");
+    panel.setAttribute("aria-hidden","true");
+    document.body.style.overflow="";
+    if(returnFocus!==false && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  burger.addEventListener("click",function(){ isOpen()?close():open(); });
+  scrim.addEventListener("click",function(){ close(); });
+  if(closeBtn) closeBtn.addEventListener("click",function(){ close(); });
+  /* every link here is a same-page anchor, so dismiss on the way out and let the
+     browser handle the jump - do not steal focus back to the burger */
+  panel.addEventListener("click",function(e){ if(e.target.closest("a")) close(false); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape" && isOpen()) close(); });
+  /* if the viewport grows past the desktop breakpoint while the panel is open,
+     the burger disappears - close so the page is not left scroll-locked */
+  window.addEventListener("resize",function(){ if(window.innerWidth>=1024) close(false); },{passive:true});
 })();
 
 /* Every SVG here is decorative - each one sits next to its own text label -

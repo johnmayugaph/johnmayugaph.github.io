@@ -179,6 +179,8 @@ Three numbers at the top of the stylesheet drive the violet used across the page
 | Drawer given an accessible name | It had `role="dialog"` with nothing to announce. Now `aria-label="Engagement record"`. |
 | Tap targets, header and footer nav | Nine footer links and ten header nav links were 16px tall, under the 24px minimum in WCAG 2.2 SC 2.5.8. Both now `min-height:24px`; the footer row gap was reduced so spacing is unchanged, and the header links were already centred in a 65px bar so nothing moved visually. Worth noting for future audits: the header set was missed on the first pass because the audit ran only at 390px, where the desktop nav is hidden. Tap targets are now checked at 13 widths from 320 to 1920px. |
 
+| Mobile burger menu + flyout | Below 1024px there was no navigation at all — only the logo and Contact button, so the ten section links were unreachable without scrolling the whole page. Added a 44x44 burger opening a right-hand flyout that matches the brand drawer's motion. Closed state is `visibility:hidden` so it stays out of the tab order; focus moves in on open and returns to the burger on close; dismisses on Esc, scrim click, link click, and on resize past the desktop breakpoint so the page can never be left scroll-locked. Below 400px the header's Contact button is hidden — logo, Contact and burger cannot share a 320px bar without clipping, and the flyout carries "Get in touch" anyway. |
+
 **Verified after the changes:** 0 of 555 text elements below WCAG AA (lowest ratio now 5.15:1),
 no horizontal scroll at 320 / 360 / 375 / 390 / 414 / 480 / 540 / 640 / 700 / 768 / 834 / 900 /
 1024 / 1180 / 1280 / 1440 / 1600 / 1920 px, 44 brand cards and all interactions intact,
