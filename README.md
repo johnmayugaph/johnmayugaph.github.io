@@ -107,6 +107,7 @@ Everything is data-driven near the top of the `<script>` block in `index.html`:
 | Variable | Controls |
 |---|---|
 | `BRANDS` | The 44 brand records |
+| `AREA` / `AREA_ORDER` | The drawer tabs. A `cro` key exists but no brand has `cro` data yet, so the CRO tab is not rendered anywhere. Add `cro:[["Task title","What you did"],…]` to a brand's `s` object and the tab appears for that brand automatically. |
 | `AGENCY` | Engagement tier, status and role per brand |
 | `DOMAINS` | Brand name to domain — adding one makes that brand's real logo appear |
 | `JOURNEY` | The resume timeline, including the Read more duties |

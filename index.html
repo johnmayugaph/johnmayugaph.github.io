@@ -455,6 +455,31 @@ footer.ft{border-top:1px solid var(--line-soft);background:var(--foot);padding:4
 .dtop p{margin:0;font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--c-400)}
 .dblurb{margin:0 0 18px;font-size:15px;color:var(--s-300)}
 .dchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+
+/* per-brand visual previews — a scrollable strip of thumbnails above the tabs.
+   Images are separate files, not data URIs: a dozen screenshots as base64 would
+   add megabytes to every page load, whereas separate files are fetched only when
+   a record is opened. */
+.viz{margin:0 0 18px}
+.viz-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+.viz-hd b{font-size:10.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--s-500)}
+.viz-hd span{font-size:11.5px;color:var(--s-500)}
+.viz-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.viz-strip::-webkit-scrollbar{height:6px}
+.viz-strip::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.viz-item{position:relative;flex:none;width:132px;border-radius:10px;overflow:hidden;
+  border:1px solid var(--line);background:var(--card);padding:0;cursor:pointer;
+  transition:border-color .18s,transform .18s}
+.viz-item:hover,.viz-item:focus-visible{border-color:rgba(167,139,250,.6);transform:translateY(-2px)}
+.viz-item img{display:block;width:100%;height:84px;object-fit:cover;object-position:top center;background:var(--bg-3)}
+.viz-item .cap{display:block;padding:7px 8px;font-size:11px;line-height:1.35;color:var(--s-300);text-align:left}
+.viz-item .ba{position:absolute;top:6px;left:6px;padding:2px 6px;border-radius:6px;font-size:9.5px;
+  font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:rgba(124,58,237,.92);color:#fff}
+/* lightbox before/after toggle */
+.lb-ba{display:flex;gap:6px;justify-content:center;margin-top:10px}
+.lb-ba button{padding:7px 16px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.04);
+  color:var(--s-300);font-size:13px;font-weight:700;min-height:34px}
+.lb-ba button[aria-pressed="true"]{background:var(--v);border-color:var(--v);color:#fff}
 .chip{border-radius:9999px;background:rgba(255,255,255,.06);padding:4px 11px;font-size:12px;color:var(--s-300)}
 .dtabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
 .dtab{border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.03);padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--s-400)}
@@ -779,6 +804,10 @@ footer.ft{border-top:1px solid var(--line-soft);background:var(--foot);padding:4
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Original message">
   <div class="lb-inner">
     <img id="lbImg" src="" alt="">
+    <div class="lb-ba" id="lbBA" hidden>
+      <button type="button" id="lbBefore" aria-pressed="false">Before</button>
+      <button type="button" id="lbAfter" aria-pressed="true">After</button>
+    </div>
     <p class="lb-cap" id="lbCap"></p>
     <button class="lb-close" id="lbClose">Close</button>
   </div>
@@ -805,10 +834,10 @@ var HUES = {
 
 /* Work-type keys used for both the PDP tabs and the "work type" filter. */
 var AREA = {
-  svc:"Services", theme:"Theme code", conv:"Upsell & AOV", subs:"Subscriptions",
+  svc:"Services", theme:"Theme code", conv:"Upsell & AOV", cro:"CRO", subs:"Subscriptions",
   apps:"Integrations", data:"Analytics", ops:"Channel ops", docs:"Documentation"
 };
-var AREA_ORDER = ["svc","theme","conv","subs","apps","data","ops","docs"];
+var AREA_ORDER = ["svc","theme","conv","cro","subs","apps","data","ops","docs"];
 
 function B(o){ return o; }
 
@@ -817,6 +846,9 @@ var BRANDS = [
 B({n:"PRIMA",c:"Food & beverage",ch:["Shopify"],era:"current",
   b:"High-protein snack bar brand. Ran the subscription platform migration, the bundle architecture, and the launch machinery behind new flavours.",
   s:{
+   cro:[
+    ["Bundle and offer architecture","Multipack bundle selector resolving pack size, flavour and subscribe-and-save into a single buy-box, with the higher-value pack as the default selection. Shipping consolidation modelled across several scenarios with a written recommendation."]
+   ],
    theme:[
     ["Multipack bundle selector","Rebuilt the bundle selector so multipack sizes, flavours and one-time-versus-subscription price all resolve inside a single buy-box rather than sending shoppers between templates."],
     ["Product section V1","Built a product section carrying multipack logic and subscription logic together, with the pricing display recalculating as the shopper changes pack size or plan."],
@@ -849,6 +881,9 @@ B({n:"PRIMA",c:"Food & beverage",ch:["Shopify"],era:"current",
 B({n:"IGK Hair",c:"Haircare",ch:["Shopify"],era:"current",
   b:"Salon haircare. Custom theme sections, wholesale enablement, and bulk catalogue operations.",
   s:{
+   cro:[
+    ["AOV mechanics","Tiered free-gift cart unlocking progressively at rising spend thresholds, with cart messaging naming the remaining spend to the next tier. Plus a dedicated wholesale template so trade traffic gets its own path, and a schema-configurable announcement bar."]
+   ],
    theme:[
     ["Carry-us wholesale page","Built the stockist and wholesale enquiry page as a dedicated template, so trade traffic gets its own path instead of being funnelled through retail PDPs."],
     ["Announcement bar","Configurable announcement bar with schema settings for message, link and styling, so promotions can be swapped without a code deploy."],
@@ -869,6 +904,9 @@ B({n:"IGK Hair",c:"Haircare",ch:["Shopify"],era:"current",
 B({n:"Completely Bare",c:"Beauty & personal care",ch:["Shopify"],era:"current",
   b:"Hair removal and body care. Collection architecture, reviews infrastructure, and gift-with-purchase mechanics.",
   s:{
+   cro:[
+    ["Collection and PDP conversion work","Collection page rebuilt for scannability across a broad range. Product bundle sections let shoppers assemble a routine in one add-to-cart. BOGO and gift-with-purchase logic wired through the cart with cart-level confirmation, and REVIEWS.io integrated at template level so ratings surface at browse stage rather than after the click."]
+   ],
    theme:[
     ["Collection page rebuild","Reworked the collection template — layout, card structure and merchandising order — to make a broad body-care range scannable."],
     ["Product bundle sections","Bundle sections on the PDP letting shoppers assemble a routine in one add-to-cart rather than several."],
@@ -887,6 +925,9 @@ B({n:"Completely Bare",c:"Beauty & personal care",ch:["Shopify"],era:"current",
 B({n:"Fatboy Hair",c:"Haircare",ch:["Shopify"],era:"current",
   b:"Men's haircare. Rebuilt the product page from the buy-box out, straight from Figma, with subscriptions inside it.",
   s:{
+   cro:[
+    ["PDP conversion architecture","Rebuilt the product page from the buy-box out, to Figma spec. Assembled from modular snippets — variant selection, subscription toggle, promo messaging, quantity, add-to-cart — so the parts recombine per product. Subscription and one-time pricing sit side by side at the decision point, with Loop wired into the buy-box."]
+   ],
    theme:[
     ["Modular PDP buy-box","Rebuilt the buy-box out of separate snippets — variant selection, subscription toggle, promotional messaging, quantity, add-to-cart — so the same parts can be recombined per product instead of maintaining several near-identical templates."],
     ["FAT Website PDP from Figma","Built the redesigned product page to the Figma spec, matching type, spacing and states rather than approximating them."],
@@ -940,6 +981,11 @@ B({n:"Eau de Juice",c:"Fragrance",ch:["Shopify"],era:"current",
 B({n:"Kings Outdoor Lighting",c:"Lighting & electrical",ch:["Shopify"],era:"current",
   b:"Landscape lighting retailer. Took the account over from an outgoing agency and rebuilt the measurement layer underneath it.",
   s:{
+   cro:[
+    ["Five-lens site audit","SEO, AEO, GEO, CRO and UX in one pass — 25 prioritised recommendations on a 7/14/4 P1/P2/P3 split. Review stars missing from collection cards despite Reviews.io being integrated, social proof buried at the foot of the PDP, bundle CTA sending users off the PDP, and a 27-combination variant dropdown creating mobile friction."],
+    ["Expanded audit and A/B roadmap","30 evidence-backed findings with ICE scoring across SEO, AEO/GEO, CRO, UX, Technical and Trust, scored 5.7/10 overall. Delivered with a 10-test ICE-ranked A/B roadmap and a screenshot capture guide for the evidence pack."],
+    ["Conversion constraint diagnosis","Reframed the work from a general audit to naming the single binding constraint: the PDP presents components rather than complete solutions, leaving buyers unresolved on compatibility at the decision moment. Specified the ShopifyQL funnel queries — sessions, cart-add rate, checkout reach, completed checkout, AOV — and how to read each outcome."]
+   ],
    data:[
     ["Rolling analytics workbook","One Google Sheets workbook per brand, with each two-week period added as new tabs rather than issued as a separate file — so the client keeps one link and the history stays intact."],
     ["Multi-source reconciliation","Shopify Analytics pulled via ShopifyQL explorations in the store admin, blended with GA4 and Meta Ads Manager as their own tabs in the same workbook."],
@@ -963,6 +1009,9 @@ B({n:"Kings Outdoor Lighting",c:"Lighting & electrical",ch:["Shopify"],era:"curr
 B({n:"Sun Bright Lighting",c:"Lighting & electrical",ch:["Shopify"],era:"current",
   b:"Landscape lighting retailer. Same transition and measurement rebuild, plus channel-level revenue reporting.",
   s:{
+   cro:[
+    ["Audit and attribution verification","Five-lens audit, plus reconciliation of agency-reported email conversions against Shopify's last-non-direct-click model. Flagged that paid had launched with no working attribution, and recommended nothing scale until tagging was in place."]
+   ],
    data:[
     ["Week-pair reporting","Rolling workbook with each new two-week period added as tabs comparing the two weeks side by side — KPI scorecard, traffic, SEO, paid, sales, and a week-over-week findings tab."],
     ["Platform tabs","GA4 and Meta Ads Manager each pulled into the client workbook as their own tabs alongside the Shopify data, so all three sit in one place."],
@@ -985,6 +1034,10 @@ B({n:"Sun Bright Lighting",c:"Lighting & electrical",ch:["Shopify"],era:"current
 B({n:"LA Voltage",c:"Lighting & electrical",ch:["WordPress"],era:"current",
   b:"Electrical and lighting services. Full site redesign plus a fortnightly lead, SEO and Meta report.",
   s:{
+   cro:[
+    ["Five-lens audit, lead-gen site","25 recommendations audited toward calls and quote requests rather than checkout. Found a staging-domain canonical leaking through breadcrumbs, package pricing contradicting itself across all four tiers, a competitor brand name in homepage copy, 0/0/0 milestone counters against a 20-years claim, and the electrical licence buried instead of surfaced as a trust signal."],
+    ["Audit re-run against live state","Re-crawled the live site rather than reusing prior findings. Several issues had worsened: all four price tiers now conflicting, the staging domain still leaking, opening hours disagreeing 8am against 9am, and two different contact emails."]
+   ],
    theme:[
     ["WordPress and Elementor rebuild","Full site redesign in Elementor, including a blog index page and a single post template, each shipped with a companion build guide so the client's team can extend it."],
     ["Template documentation","Every build handed over with written guidance rather than an undocumented page tree."]
@@ -1005,6 +1058,9 @@ B({n:"LA Voltage",c:"Lighting & electrical",ch:["WordPress"],era:"current",
 B({n:"TCVM Pet Supply",c:"Pet",ch:["Shopify"],era:"current",
   b:"Traditional Chinese veterinary medicine, sold as PET|TAO. Complex product pages and fulfilment documentation.",
   s:{
+   cro:[
+    ["Variant picker A/B build","Built the same PDP twice for a high-variant clinical product — tile-based and dropdown variant pickers — so the pattern could be compared rather than assumed. On this catalogue the picker treatment decides whether shoppers choose confidently or abandon."]
+   ],
    theme:[
     ["Complex PDP build","Built the Jing Tang Cervical Formula product page, a high-variant product needing dosage, size and format selection to resolve cleanly in one buy-box."],
     ["Two variant-picker treatments","Built the picker twice — tile-based and dropdown — so the pattern could be compared rather than assumed, on a product where variant count makes the choice consequential."]
@@ -1036,6 +1092,9 @@ B({n:"Protect-A-Bed",c:"Home & sleep",ch:["Shopify Plus","TikTok Shop"],era:"cur
 B({n:"CTRL",c:"Food & beverage",ch:["Shopify"],era:"current",
   b:"Meal replacement and protein snack brand, born out of gaming. Cart-level conversion mechanics and fulfilment polish.",
   s:{
+   cro:[
+    ["Cart threshold mechanic","Free shipping progress bar in the cart, tracking spend against the threshold and updating live as items are added — turning an invisible shipping rule into a visible, closeable gap."]
+   ],
    theme:[
     ["Free shipping progress bar","Built the cart progress bar that tracks spend against the free-shipping threshold and updates live as items are added."],
     ["Packing slip customisation","Reworked the packing slip template for fulfilment and brand presentation in the box."]
@@ -1189,7 +1248,11 @@ B({n:"PlayerMaker",c:"Consumer electronics",ch:["Shopify"],era:"current",
   b:"Sports performance wearables. Inventory and catalogue data work.",s:{},
   gaps:["Theme work","App stack"]}),
 B({n:"Back To Earth",c:"Health & wellness",ch:["Shopify"],era:"current",
-  b:"Wellness brand. Pixel and tracking verification plus a full e-commerce audit.",s:{},
+  b:"Wellness brand. Pixel and tracking verification plus a full e-commerce audit.",s:{
+   cro:[
+    ["CRO audit and 30/60/90 plan","Interactive audit with annotated current-state and recommended-fix panels. Lead finding: the homepage hero was a full-width image with no headline, no value proposition and no CTA. Test plan phased into Foundations, Conversion Depth and Personalisation, then Scale and Optimise, each test carrying a hypothesis and a success metric."],
+    ["Test roadmap detail","Tests specified: skin-type quiz with an A/B on the homepage hero CTA, bundle grid against comparison table, Add-to-Routine cart drawer upsell, free shipping threshold, subscribe-and-save at 10% against 15%, Quick Shop against full PDP, trust badge bar, guest against account checkout, and a multivariate PDP layout."]
+   ]},
   gaps:["Category confirmation","App stack"]}),
 B({n:"Hunnee",c:"Beauty & personal care",ch:["Shopify"],era:"current",
   b:"Personal care brand. Pixel implementation and tracking audit.",s:{},
@@ -1871,15 +1934,23 @@ document.addEventListener("click",function(e){
   var t=e.target.closest("[data-shot]"); if(!t) return;
   var f=FEEDBACK.filter(function(x){return x.who===t.dataset.shot;})[0];
   if(!f||!f.img) return;
+  VIZCUR=null; $("#lbBA").hidden=true;   /* shared lightbox — drop any before/after state */
   $("#lbImg").src=f.img;
   $("#lbImg").alt="Message from "+f.who;
   $("#lbCap").textContent=f.who+" \u00b7 "+f.role;
+  $("#lb").setAttribute("aria-label","Original message");
   $("#lb").classList.add("on"); document.body.style.overflow="hidden"; $("#lbClose").focus();
 });
 function closeLb(){ $("#lb").classList.remove("on"); document.body.style.overflow=""; }
 $("#lbClose").addEventListener("click",closeLb);
 $("#lb").addEventListener("click",function(e){ if(e.target===$("#lb")) closeLb(); });
-document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeLb(); });
+/* The lightbox sits on top of the record drawer, and both listen for Escape on
+   document. This one is registered first, so it consumes the event when the
+   lightbox is open — otherwise a single press closed the image AND the record
+   behind it, losing the reader's place. */
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape" && $("#lb").classList.contains("on")){ closeLb(); e.stopImmediatePropagation(); }
+});
 
 $("#fbNote").textContent="Shared internally as team shout-outs. Happy to put you in touch with references on request.";
 
@@ -1950,6 +2021,7 @@ function openRec(n){
     + '<div class="dchips">'
     + (b.ch.length?b.ch.map(function(c){return '<span class="chip">'+esc(c)+'</span>';}).join(""):'<span class="chip">Platform TBC</span>')
     + '</div>'
+    + vizStrip(b)
     + '<div class="dtabs" id="dtabs">'+curAreas.map(function(k,i){
         return '<button class="dtab" data-t="'+i+'" aria-pressed="'+(i===0)+'">'+esc(AREA[k])+' '+b.s[k].length+'</button>';
       }).join("")+'</div>'
@@ -1987,7 +2059,7 @@ function closeDw(){
 }
 $("#dwClose").addEventListener("click",closeDw);
 $("#scrim").addEventListener("click",closeDw);
-document.addEventListener("keydown",function(e){if(e.key==="Escape")closeDw();});
+document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeDw(); });
 document.addEventListener("click",function(e){
   var o=e.target.closest("[data-open]"); if(o) openRec(o.dataset.open);
 });
@@ -2060,6 +2132,47 @@ draw();
      the burger disappears - close so the page is not left scroll-locked */
   window.addEventListener("resize",function(){ if(window.innerWidth>=1024) close(false); },{passive:true});
 })();
+
+/* Visual previews. A brand with no viz array renders nothing at all, so this is
+   inert until images exist. Thumbnails are lazy and carry explicit dimensions so
+   opening a record does not shift layout while they load. */
+var VIZCUR=null;
+function vizStrip(b){
+  var v = b.viz;
+  if(!v || !v.length) return "";
+  return '<div class="viz"><div class="viz-hd"><b>Preview</b><span>'
+    + v.length + (v.length===1?' image':' images') + '</span></div><div class="viz-strip">'
+    + v.map(function(it,i){
+        return '<button class="viz-item" type="button" data-viz="'+i+'" '
+          + 'aria-label="Open preview: '+esc(it.c)+'">'
+          + (it.before?'<span class="ba">Before / after</span>':'')
+          + '<img src="'+esc(it.src)+'" alt="" width="132" height="84" loading="lazy" decoding="async">'
+          + '<span class="cap">'+esc(it.c)+'</span></button>';
+      }).join("")
+    + '</div></div>';
+}
+function showViz(which){
+  if(!VIZCUR) return;
+  var isBefore = which==="before" && VIZCUR.before;
+  $("#lbImg").src = isBefore ? VIZCUR.before : VIZCUR.src;
+  $("#lbImg").alt = VIZCUR.c + (VIZCUR.before ? (isBefore?" — before":" — after") : "");
+  $("#lbBefore").setAttribute("aria-pressed", isBefore?"true":"false");
+  $("#lbAfter").setAttribute("aria-pressed", isBefore?"false":"true");
+}
+function openViz(item){
+  VIZCUR=item;
+  $("#lbBA").hidden = !item.before;
+  showViz("after");
+  $("#lbCap").textContent = item.c;
+  $("#lb").setAttribute("aria-label", item.before ? "Before and after preview" : "Work preview");
+  $("#lb").classList.add("on"); document.body.style.overflow="hidden"; $("#lbClose").focus();
+}
+$("#lbBefore").addEventListener("click",function(){ showViz("before"); });
+$("#lbAfter").addEventListener("click",function(){ showViz("after"); });
+document.addEventListener("click",function(e){
+  var t=e.target.closest("[data-viz]");
+  if(t && cur && cur.viz) openViz(cur.viz[parseInt(t.dataset.viz,10)]);
+});
 
 /* Every SVG here is decorative - each one sits next to its own text label -
    so keep screen readers from announcing them as unlabelled graphics. */
